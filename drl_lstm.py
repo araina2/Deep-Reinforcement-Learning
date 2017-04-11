@@ -56,17 +56,17 @@ class DQNAgent:
             next_state3D = np.zeros((batch_size, timesteps, state.shape[1]))
             for x in range(state.shape[0]):
                 for j in range(timesteps):
+                    if j >= 1:
+                        state3D[x][j-1] = state3D[x][j]
                     for k in range(state.shape[1]):
-                        if j >= 1:
-                            state3D[x][j-1] = state3D[x][j]
                         state3D[x][j][k] = state[x][k]
 
             
             for x in range(next_state.shape[0]):
                 for j in range(timesteps):
+                    if j >= 1:
+                        next_state3D[x][j-1] = next_state3D[x][j]
                     for k in range(next_state.shape[1]):
-                        if j >= 1:
-                            next_state3D[x][j-1] = next_state3D[x][j]
                         next_state3D[x][j][k] = next_state[x][k]
             
             target = self.model.predict(state3D)[0]
@@ -101,10 +101,10 @@ if __name__ == "__main__":
         state3D = np.zeros((state.shape[0], timesteps, state.shape[1]))
         for i in range(state.shape[0]):
             for time in range(timesteps):
-                env.render()
+                #env.render()
+                if time >= 1:
+                    state3D[i][time-1] = state3D[i][time]
                 for k in range(state.shape[1]):
-                    if time >= 1:
-                        state3D[i][time-1] = state3D[i][time]
                     state3D[i][time][k] = state[i][k]
                 
                 action = agent.act(state3D)
