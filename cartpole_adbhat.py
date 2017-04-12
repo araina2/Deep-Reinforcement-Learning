@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
     for e in range(EPISODES):
         state = env.reset()
-        print 'Init state',state
+        #print 'Init state',state
         state = np.reshape(state, [1, state_size])
         for time in range(1000):
             #env.render()
@@ -95,7 +95,7 @@ if __name__ == "__main__":
             agent.remember(state, action, reward, next_state, done)
             state = next_state
             if done or time == 999:
-                print("episode:\t{}, score:\t{}, e:\t{:.2}"
+                print("episode:\t{}\tscore:\t{}\te:\t{:.2}"
                         .format(e, time, agent.epsilon))
                 break
         agent.replay(32)
