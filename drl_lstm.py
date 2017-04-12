@@ -7,7 +7,7 @@ from keras.models import Sequential
 from keras.layers import Dense, LSTM
 from keras.optimizers import RMSprop
 
-EPISODES = 5000
+EPISODES = 1000
 timesteps = 100
 
 class DQNAgent:
@@ -55,17 +55,26 @@ class DQNAgent:
             state3D = np.zeros((batch_size, timesteps, state.shape[1]))
             next_state3D = np.zeros((batch_size, timesteps, state.shape[1]))
             for x in range(state.shape[0]):
+                #print('\n')
+                #print('x is : ', x)
+                #print(state3D[x])
                 for j in range(timesteps):
-                    if j >= 1:
-                        state3D[x][j-1] = state3D[x][j]
+                    for k in range(state.shape[1]):
+                        if j >= 1:
+                            state3D[x][j][k] = state3D[x][j-1][k]
                     for k in range(state.shape[1]):
                         state3D[x][j][k] = state[x][k]
+                #print('x is : ', x)
+                #print(state3D[x])
+
+            #print('state is :', state3D)
 
             
             for x in range(next_state.shape[0]):
                 for j in range(timesteps):
-                    if j >= 1:
-                        next_state3D[x][j-1] = next_state3D[x][j]
+                    for k in range(state.shape[1]):
+                        if j >= 1:
+                            next_state3D[x][j][k] = next_state3D[x][j-1][k]
                     for k in range(next_state.shape[1]):
                         next_state3D[x][j][k] = next_state[x][k]
             
@@ -102,8 +111,11 @@ if __name__ == "__main__":
         for i in range(state.shape[0]):
             for time in range(timesteps):
                 #env.render()
-                if time >= 1:
-                    state3D[i][time-1] = state3D[i][time]
+                #if time >= 1:
+                #    state3D[i][time-1] = state3D[i][time]
+                for k in range(state.shape[1]):
+                    if time >= 1:
+                        state3D[i][time][k] = state3D[i][time-1][k]
                 for k in range(state.shape[1]):
                     state3D[i][time][k] = state[i][k]
                 
