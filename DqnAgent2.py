@@ -8,11 +8,12 @@ from keras.optimizers import RMSprop
 import random
 from keras.models import load_model
 import numpy as np
+import time
 
 class DqnAgent:
     """Deep Q-learning Network Agent class"""
     def __init__(self, state_size=None, action_size=1,
-                 epsilon=1.0, minibatch_size=32, gamma=0.9, memory_size=50):
+                 epsilon=1.0, minibatch_size=32, gamma=0.9, memory_size=10000):
         """
         :param state_size: the size of the input states
         :param action_size: int, number of possible actions
@@ -23,7 +24,7 @@ class DqnAgent:
         """
         self.state_size = state_size
         self.action_size = action_size
-        self.memory = deque(maxlen=100000)
+        self.memory = deque(maxlen=memory_size)
         self.gamma = gamma    # discount rate
         self.epsilon = epsilon  # exploration rate
         self.e_decay = .99
@@ -65,30 +66,41 @@ class DqnAgent:
 
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.action_size), True
-        act_values = self.model.predict(np.array([state]))
+        act_values = self.model.predict(state)
         return np.argmax(act_values[0]), False  # returns action
 
-    def replay(self, batch_size):
+    def replay(self, batch_size, frame_count=4):
         """
         replay memory to train
         :param batch_size: int, the batch size to train on
         """
         batch_size = min(batch_size, len(self.memory))
         minibatch = random.sample(self.memory, batch_size)
-        X = np.zeros((batch_size,) + self.state_size)
-        Y = np.zeros((batch_size, self.action_size))
+        #minibatch = self.memory
+        #minibatch_length = len(minibatch)
+        #batch_size = minibatch_length
+        X = np.zeros((batch_size * frame_count,) + self.state_size)
+        Y = np.zeros((batch_size * frame_count, self.action_size))
+
         for i in range(batch_size):
             state, action, reward, next_state, done = minibatch[i]
-            target = self.model.predict(np.array([state]))[0]
+            target = self.model.predict(state)[0]
             if done:
                 target[action] = reward
             else:
                 target[action] = reward + self.gamma * \
-                            np.amax(self.model.predict(np.array([next_state]))[0])
+                            np.amax(self.model.predict(next_state)[0])
             X[i], Y[i] = state, target
+
         self.model.fit(X, Y, batch_size=batch_size, nb_epoch=1, verbose=0)
         if self.epsilon > self.e_min:
             self.epsilon *= self.e_decay
+
+        print 'fitting model', len(self.memory)
+
+        # clear memory
+        self.memory.clear()
+
 
     def load(self, path):
         """
