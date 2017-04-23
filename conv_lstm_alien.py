@@ -21,7 +21,7 @@ else:
 
 
 def printUsage():
-    print "Usage: python cartpole.py <num_episodes_to_run>"
+    print "Usage: python conv_lstm_alien.py <num_episodes_to_run>"
 
 if len(sys.argv) < 2:
     print("Not enough arguments: " + str(len(sys.argv)))
@@ -36,12 +36,12 @@ def rgb2gray(rgb):
 
 np.random.seed(7)
 
-#MODEL_DIR_PATH = "./models/"
+MODEL_DIR_PATH = "./models/"
 
 EPISODES = int(sys.argv[1])
 
-#if (not os.path.exists(MODEL_DIR_PATH)):
-#    os.makedirs(MODEL_DIR_PATH)
+if (not os.path.exists(MODEL_DIR_PATH)):
+    os.makedirs(MODEL_DIR_PATH)
 
 class DQNAgent:
     def __init__(self, state_size, action_size, state):
@@ -125,7 +125,9 @@ if __name__ == "__main__":
             state = np.reshape(state, (1, 1, state.shape[0], state.shape[1], 1))
 
         sum_reward = 0
-        for time in range(1000):
+        done = 0
+        #for time in range(1000):
+        while not done:
             # env.render()
             action, isRandom = agent.act(state)
             next_state3D, reward, done, _ = env.step(action)
@@ -135,7 +137,7 @@ if __name__ == "__main__":
             else:
                 next_state = np.reshape(next_state, (1, 1, next_state.shape[0], next_state.shape[1], 1))
             
-            reward = reward if not done else 0
+            reward = reward
             sum_reward += reward
             #if time >=199:
                 #reward=1
@@ -146,13 +148,13 @@ if __name__ == "__main__":
             agent.remember(state, action, reward, next_state, done)
             state = next_state
 
-            if done or time == 999:
-                print("episode:\t{}\ttime:\t{}\te:\t{:.2}\tscore\t{}\tisrandom:\t{}"
-                        .format(episode, time, agent.epsilon, sum_reward, isRandom))
+            if done:
+                print("episode:\t{}\te:\t{:.2}\tscore\t{}\tisrandom:\t{}"
+                        .format(episode, agent.epsilon, sum_reward, isRandom))
                 break
                 
         agent.replay(32)
 
     #print("Total:\t{}".format(total_reward))
-    #outfileName = "cartpole_v2_l"+str(NUM_HIDDEN_LAYERS)+"_n"+str(NUM_NODES_IN_HIDDEN_LAYER)+"_e"+str(EPISODES)+".h5"
-    #agent.save(os.path.join(MODEL_DIR_PATH, outfileName))
+    outfileName = "conv_lstm"+str(EPISODES)+".h5"
+    agent.save(os.path.join(MODEL_DIR_PATH, outfileName))
