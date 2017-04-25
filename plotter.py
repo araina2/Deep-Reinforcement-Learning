@@ -10,7 +10,7 @@ def loadNumericSeriesFromFile(filePath):
     lines = input_file.readlines()
     lines = filter(None, lines)
     lines = lines[19:]
-    lines = lines[3000:]
+    lines = lines[4000:4500]
 
     x = []
     y = []
@@ -19,7 +19,8 @@ def loadNumericSeriesFromFile(filePath):
     for line in lines:
         if line.startswith('episode'):
             tokens = line.split('\t')
-            x.append(float(tokens[1]))
+            # x.append(float(tokens[1]))
+            x.append(float(numPoints))
             y.append(float(tokens[5]))
             numPoints += 1
 
@@ -42,12 +43,12 @@ if __name__ == "__main__":
     legends = []
 
 	# Score 
-    filename = 'conv_lstm.txt'
+    filename = 'conv_alien.txt'
     y, x = loadNumericSeriesFromFile('./'+filename)
     # y.sort()
 
-    # ys.append(y)
-    # xs.append(x)
+    #ys.append(y)
+    #xs.append(x)
     # legends.append('Score')
 
 	# Moving Average  -100
@@ -69,7 +70,7 @@ if __name__ == "__main__":
     plt.ylim(ymin=0)
     # plt.legend(legends, fontsize=15, loc='best')
     plt.legend(legends, fontsize=15, loc='upper right')
-    plt.title('Alien - CNN with LSTM', fontsize=20)
+    plt.title('Alien - CNN', fontsize=20)
     plt.xlabel('Episode', fontsize=15)
     plt.ylabel('Score', fontsize=15)
 
