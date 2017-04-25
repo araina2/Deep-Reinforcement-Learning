@@ -10,6 +10,7 @@ def loadNumericSeriesFromFile(filePath):
     lines = input_file.readlines()
     lines = filter(None, lines)
     lines = lines[19:]
+    lines = lines[3000:]
 
     x = []
     y = []
@@ -45,9 +46,9 @@ if __name__ == "__main__":
     y, x = loadNumericSeriesFromFile('./'+filename)
     # y.sort()
 
-    ys.append(y)
-    xs.append(x)
-    legends.append('Score')
+    # ys.append(y)
+    # xs.append(x)
+    # legends.append('Score')
 
 	# Moving Average  -100
     runLength=100
